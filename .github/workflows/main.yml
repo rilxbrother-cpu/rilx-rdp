@@ -9,32 +9,25 @@ jobs:
     timeout-minutes: 350
 
     steps:
-      # --- TAMBAHAN DARI ZMZ: INSTALL TOOLS & BOT ---
-      - name: Install Python, Node.js, & Tools
+      # --- TAMBAHAN ZMZ: INSTALL TOOLS & WSL UBUNTU 22.04 ---
+      - name: Install Tools & Setup WSL Ubuntu 22.04
         run: |
-          choco install python312 unzip -y
-          python -m pip install --upgrade pip
-          pip install gdown
-
-      - name: Download Bot Files via gdown
-        run: |
-          # Download file rilx.zip dari GDrive lu
-          gdown https://drive.google.com/uc?id=103rDRQ-nKpbBLxFczxPpEwgAJK0RA_6v -O rilx.zip
-          # Extract file zip
-          tar -xf rilx.zip
-          # Hapus file zip biar hemat storage VM
-          del rilx.zip
-
-      - name: Install NPM Dependencies
-        run: |
-          cd ourin
-          npm install --verbose
-
-      - name: Start Bot in Background
-        run: |
-          cd ourin
-          # Start-Process ini WAJIB biar workflow nggak nyangkut nungguin bot
-          Start-Process -FilePath "npm" -ArgumentList "start" -NoNewWindow
+          # 1. Install Git, WinRAR, dan Unzip lewat Chocolatey
+          choco install git winrar unzip -y
+          
+          # 2. Update WSL ke versi terbaru
+          wsl --update
+          
+          # 3. Download & Install Ubuntu 22.04 secara diam-diam (silent)
+          # Perintah ini akan nge-download Ubuntu 22.04 dan set sebagai default
+          wsl --install -d Ubuntu-22.04 --no-launch
+          
+          # 4. Restart service LxssManager biar WSL langsung kebaca tanpa restart VM
+          Restart-Service LxssManager -Force -ErrorAction SilentlyContinue
+          
+          # 5. Cek versi WSL dan daftar distro
+          wsl --version
+          wsl --list --verbose
       # ----------------------------------------------
 
       - name: Configure Core RDP Settings
