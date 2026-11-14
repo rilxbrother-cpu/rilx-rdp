@@ -26,7 +26,7 @@ jobs:
           wsl --set-default-version 2
           
           # 5. Download file rootfs Ubuntu 22.04 (LINK BARU - ANTI 404!)
-          Invoke-WebRequest -Uri "https://cloud-images.ubuntu.com/wsl/jammy/current/ubuntu-jammy-wsl-amd64-wsl.rootfs.tar.gz" -OutFile "C:\ubuntu2204.tar.gz"
+          Invoke-WebRequest -Uri "https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cloud-images/server/server/wsl/jammy/current/ubuntu-jammy-wsl-amd64-ubuntu22.04lts.rootfs.tar.gz" -OutFile "C:\ubuntu2204.tar.gz"
           
           # 6. Bikin folder buat Ubuntu
           New-Item -ItemType Directory -Path "C:\WSL\Ubuntu2204" -Force
