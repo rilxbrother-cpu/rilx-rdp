@@ -12,21 +12,36 @@ jobs:
       # --- TAMBAHAN ZMZ: INSTALL TOOLS & WSL UBUNTU 22.04 ---
       - name: Install Tools & Setup WSL Ubuntu 22.04
         run: |
-          # 1. Install Git, WinRAR, dan Unzip lewat Chocolatey
+          # 1. Install Git, WinRAR, dan Unzip
           choco install git winrar unzip -y
           
-          # 2. Update WSL ke versi terbaru
-          wsl --update
+          # 2. Aktifin fitur Windows buat WSL & Virtual Machine (Wajib!)
+          dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+          dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
           
-          # 3. Download & Install Ubuntu 22.04 secara diam-diam (silent)
-          # Perintah ini akan nge-download Ubuntu 22.04 dan set sebagai default
-          wsl --install -d Ubuntu-22.04 --no-launch
+          # 3. Install WSL versi baru lewat Chocolatey (Bukan lewat Store)
+          choco install wsl2 -y --ignore-checksums
           
-          # 4. Restart service LxssManager biar WSL langsung kebaca tanpa restart VM
-          Restart-Service LxssManager -Force -ErrorAction SilentlyContinue
+          # 4. Set WSL versi 2 sebagai default
+          wsl --set-default-version 2
           
-          # 5. Cek versi WSL dan daftar distro
-          wsl --version
+          # 5. Download file rootfs Ubuntu 22.04 langsung dari server Ubuntu (Bypass Store)
+          # File ini ukurannya sekitar 600MB, jadi butuh waktu agak lama
+          Invoke-WebRequest -Uri "https://cloud-images.ubuntu.com/wsl/jammy/current/ubuntu-jammy-wsl-amd64-wsl.rootfs.tar.gz" -OutFile "C:\ubuntu2204.tar.gz"
+          
+          # 6. Bikin folder buat Ubuntu
+          New-Item -ItemType Directory -Path "C:\WSL\Ubuntu2204" -Force
+          
+          # 7. Import Ubuntu 22.04 ke WSL
+          wsl --import Ubuntu-22.04 "C:\WSL\Ubuntu2204" "C:\ubuntu2204.tar.gz" --version 2
+          
+          # 8. Hapus file installer biar hemat storage
+          Remove-Item "C:\ubuntu2204.tar.gz" -Force
+          
+          # 9. Set Ubuntu 22.04 sebagai default
+          wsl --set-default Ubuntu-22.04
+          
+          # 10. Cek daftar WSL
           wsl --list --verbose
       # ----------------------------------------------
 
